@@ -115,6 +115,12 @@ namespace AcxiomCRM.Controllers
                 }
             }
 
+            ModelState.Remove("Customer");
+            ModelState.Remove("Lead");
+            ModelState.Remove("Opportunity");
+            ModelState.Remove("AssignedTo");
+            ModelState.Remove("Status");
+
             if (ModelState.IsValid)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

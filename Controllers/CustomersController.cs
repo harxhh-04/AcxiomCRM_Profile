@@ -120,7 +120,6 @@ namespace AcxiomCRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Customer customer)
         {
-            // Server-side duplicate validation
             if (!await _crmService.IsCustomerEmailUniqueAsync(customer.Email))
             {
                 ModelState.AddModelError("Email", "A customer with this email address already exists.");
@@ -130,6 +129,9 @@ namespace AcxiomCRM.Controllers
             {
                 ModelState.AddModelError("Phone", "A customer with this phone number already exists.");
             }
+
+            ModelState.Remove("CustomerCode");
+            ModelState.Remove("AssignedTo");
 
             if (ModelState.IsValid)
             {
@@ -177,14 +179,12 @@ namespace AcxiomCRM.Controllers
                 return BadRequest();
             }
 
-            // Check if record is accessible to current user
             var existingCustomer = await _crmService.GetScopedCustomers(User).AsNoTracking().FirstOrDefaultAsync(c => c.CustomerId == id);
             if (existingCustomer == null)
             {
                 return NotFound();
             }
 
-            // Server-side duplicate validation excluding current record
             if (!await _crmService.IsCustomerEmailUniqueAsync(customer.Email, id))
             {
                 ModelState.AddModelError("Email", "A customer with this email address already exists.");
@@ -194,6 +194,9 @@ namespace AcxiomCRM.Controllers
             {
                 ModelState.AddModelError("Phone", "A customer with this phone number already exists.");
             }
+
+            ModelState.Remove("CustomerCode");
+            ModelState.Remove("AssignedTo");
 
             if (ModelState.IsValid)
             {

@@ -8,7 +8,6 @@ namespace AcxiomCRM.Models
         [Key]
         public int LeadId { get; set; }
 
-        [Required]
         [StringLength(20)]
         [Display(Name = "Lead Code")]
         public string LeadCode { get; set; } = string.Empty;

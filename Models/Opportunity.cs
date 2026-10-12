@@ -45,7 +45,6 @@ namespace AcxiomCRM.Models
         [Display(Name = "Expected Close Date")]
         public DateTime ExpectedCloseDate { get; set; } = DateTime.UtcNow.AddDays(30);
 
-        [Required]
         [StringLength(20)]
         public string Status { get; set; } = "Open"; // Open, Won, Lost
 

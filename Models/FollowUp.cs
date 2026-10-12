@@ -44,7 +44,6 @@ namespace AcxiomCRM.Models
         [StringLength(500, ErrorMessage = "Remarks cannot exceed 500 characters.")]
         public string Remarks { get; set; } = string.Empty;
 
-        [Required]
         [StringLength(20)]
         public string Status { get; set; } = "Planned"; // Planned, Completed, Missed, Cancelled
 

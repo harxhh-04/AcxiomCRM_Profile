@@ -125,7 +125,6 @@ namespace AcxiomCRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Opportunity opportunity)
         {
-            // Business validation on server
             if (!_crmService.ValidateOpportunity(opportunity, out var errors))
             {
                 foreach (var err in errors)
@@ -133,6 +132,11 @@ namespace AcxiomCRM.Controllers
                     ModelState.AddModelError(string.Empty, err);
                 }
             }
+
+            ModelState.Remove("Customer");
+            ModelState.Remove("Lead");
+            ModelState.Remove("AssignedTo");
+            ModelState.Remove("Status");
 
             if (ModelState.IsValid)
             {
@@ -189,7 +193,6 @@ namespace AcxiomCRM.Controllers
                 return NotFound();
             }
 
-            // Business validation on server
             if (!_crmService.ValidateOpportunity(opportunity, out var errors))
             {
                 foreach (var err in errors)
@@ -197,6 +200,11 @@ namespace AcxiomCRM.Controllers
                     ModelState.AddModelError(string.Empty, err);
                 }
             }
+
+            ModelState.Remove("Customer");
+            ModelState.Remove("Lead");
+            ModelState.Remove("AssignedTo");
+            ModelState.Remove("Status");
 
             if (ModelState.IsValid)
             {

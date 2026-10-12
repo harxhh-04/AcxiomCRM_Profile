@@ -125,6 +125,9 @@ namespace AcxiomCRM.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Lead lead)
         {
+            ModelState.Remove("LeadCode");
+            ModelState.Remove("AssignedTo");
+
             if (ModelState.IsValid)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -175,6 +178,9 @@ namespace AcxiomCRM.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("LeadCode");
+            ModelState.Remove("AssignedTo");
 
             if (ModelState.IsValid)
             {

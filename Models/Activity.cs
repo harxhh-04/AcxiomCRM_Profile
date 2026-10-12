@@ -49,7 +49,6 @@ namespace AcxiomCRM.Models
         [ForeignKey("AssignedToId")]
         public virtual ApplicationUser? AssignedTo { get; set; }
 
-        [Required]
         [StringLength(20)]
         public string Status { get; set; } = "Completed"; // Completed, Pending, Cancelled
     }
