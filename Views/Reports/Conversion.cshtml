@@ -1,0 +1,74 @@
+@model AcxiomCRM.ViewModels.ConversionReportViewModel
+@{
+    ViewData["Title"] = "Lead Conversion Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Lead Conversion & Outcomes</h2>
+        <p class="text-muted small mb-0">Analysis of lead qualification rates, converted deals, and sales funnel velocity</p>
+    </div>
+    <div>
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i> Print
+        </button>
+    </div>
+</div>
+
+<!-- Conversion Metrics -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-white shadow-sm">
+            <span class="text-muted small fw-semibold text-uppercase">Total Captured Leads</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0">@Model.TotalLeads</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-success-subtle text-success shadow-sm">
+            <span class="small fw-semibold text-uppercase">Converted to Customer</span>
+            <h3 class="fw-bold mt-1 mb-0">@Model.ConvertedLeads</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-danger-subtle text-danger shadow-sm">
+            <span class="small fw-semibold text-uppercase">Lost / Disqualified</span>
+            <h3 class="fw-bold mt-1 mb-0">@Model.LostLeads</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-primary-subtle text-primary shadow-sm">
+            <span class="small fw-semibold text-uppercase">Conversion Rate</span>
+            <h3 class="fw-bold mt-1 mb-0">@Model.ConversionRate%</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3 text-dark">Funnel Progression Overview</h5>
+    <div class="progress mb-4" style="height: 24px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: @Model.ConversionRate%;" title="Converted">
+            @Model.ConversionRate% Converted
+        </div>
+        <div class="progress-bar bg-info" role="progressbar" style="width: @(Model.TotalLeads > 0 ? (Model.ActiveLeads * 100.0 / Model.TotalLeads) : 0)%;" title="In Progress">
+            Active Nurturing
+        </div>
+        <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.TotalLeads > 0 ? (Model.LostLeads * 100.0 / Model.TotalLeads) : 0)%;" title="Lost">
+            Lost
+        </div>
+    </div>
+
+    <div class="row g-3 pt-2">
+        <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+                <span class="text-muted small">Generated Deal Value from Converted Leads</span>
+                <h4 class="fw-bold text-success mt-1 mb-0">$@Model.TotalConvertedOpportunityValue.ToString("N0")</h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+                <span class="text-muted small">Active In-Flight Inquiries</span>
+                <h4 class="fw-bold text-dark mt-1 mb-0">@Model.ActiveLeads leads in progress</h4>
+            </div>
+        </div>
+    </div>
+</div>

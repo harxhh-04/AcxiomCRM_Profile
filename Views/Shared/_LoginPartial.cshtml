@@ -1,0 +1,50 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav ms-auto align-items-center">
+@if (SignInManager.IsSignedIn(User))
+{
+    var user = await UserManager.GetUserAsync(User);
+    var roles = user != null ? await UserManager.GetRolesAsync(user) : new List<string>();
+    var primaryRole = roles.FirstOrDefault() ?? "User";
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="avatar-circle">@(user?.FullName?.Substring(0, 1) ?? "U")</span>
+            <div class="d-none d-md-block text-start lh-sm">
+                <span class="d-block fw-semibold small">@(user?.FullName ?? User.Identity?.Name)</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.7rem;">@primaryRole</span>
+            </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
+            <li class="dropdown-header">
+                <strong>@(user?.Email)</strong>
+                <div class="text-muted small">Role: @primaryRole</div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
+                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Login">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+        </a>
+    </li>
+    <li class="nav-item ms-lg-2">
+        <a class="btn btn-sm btn-primary rounded-pill px-3" asp-controller="Account" asp-action="Register">
+            Sign Up
+        </a>
+    </li>
+}
+</ul>

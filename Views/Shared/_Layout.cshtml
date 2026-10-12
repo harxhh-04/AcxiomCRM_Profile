@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AcxiomCRM</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Main Top Navbar -->
+    <header class="sticky-top shadow-sm bg-white border-bottom">
+        <nav class="navbar navbar-expand-lg navbar-light py-2">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary" asp-controller="Dashboard" asp-action="Index">
+                    <span class="brand-icon"><i class="bi bi-intersect"></i></span>
+                    <span class="fs-4 tracking-tight">Acxiom<span class="text-dark">CRM</span></span>
+                </a>
+                
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-lg-1">
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active fw-semibold text-primary" : "")" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="bi bi-grid-1x2-fill me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active fw-semibold text-primary" : "")" asp-controller="Customers" asp-action="Index">
+                                    <i class="bi bi-people me-1"></i> Customers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Leads" ? "active fw-semibold text-primary" : "")" asp-controller="Leads" asp-action="Index">
+                                    <i class="bi bi-funnel me-1"></i> Leads
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Opportunities" ? "active fw-semibold text-primary" : "")" asp-controller="Opportunities" asp-action="Index">
+                                    <i class="bi bi-briefcase me-1"></i> Opportunities
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "FollowUps" ? "active fw-semibold text-primary" : "")" asp-controller="FollowUps" asp-action="Index">
+                                    <i class="bi bi-calendar-event me-1"></i> Follow-Ups
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Activities" ? "active fw-semibold text-primary" : "")" asp-controller="Activities" asp-action="Index">
+                                    <i class="bi bi-clock-history me-1"></i> Activities
+                                </a>
+                            </li>
+
+                            <!-- Reports Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reports" ? "active fw-semibold text-primary" : "")" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-bar-chart-line me-1"></i> Reports
+                                </a>
+                                <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="reportsDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Reports" asp-action="Pipeline"><i class="bi bi-graph-up me-2"></i> Pipeline Report</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Reports" asp-action="Conversion"><i class="bi bi-arrow-repeat me-2"></i> Lead Conversion</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Reports" asp-action="Customers"><i class="bi bi-person-lines-fill me-2"></i> Customers Summary</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Reports" asp-action="FollowUps"><i class="bi bi-alarm me-2"></i> Follow-Up Performance</a></li>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Reports" asp-action="UserActivity"><i class="bi bi-person-check me-2"></i> User Activity Report</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Admin / Management Links -->
+                            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AuditLogs" ? "active fw-semibold text-primary" : "")" asp-controller="AuditLogs" asp-action="Index">
+                                        <i class="bi bi-shield-check me-1"></i> Audit Logs
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link px-3 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active fw-semibold text-primary" : "")" asp-controller="Users" asp-action="Index">
+                                        <i class="bi bi-person-gear me-1"></i> User Admin
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <!-- User authentication / profile widget -->
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main role="main" class="container-fluid px-lg-4 py-4 flex-grow-1">
+        <!-- Toast / Alert notifications -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <div>@TempData["SuccessMessage"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                <div>@TempData["ErrorMessage"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- Application Footer -->
+    <footer class="mt-auto py-3 bg-white border-top">
+        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between align-items-center text-muted small">
+            <div>
+                &copy; @DateTime.UtcNow.Year <strong class="text-dark">AcxiomCRM</strong> &bull; Enterprise Customer Relationship Management
+            </div>
+            <div class="d-flex gap-3">
+                <span class="badge bg-secondary-subtle text-secondary border">Role-Based Security</span>
+                <span class="badge bg-secondary-subtle text-secondary border">Audit Logging Active</span>
+                <span class="badge bg-secondary-subtle text-secondary border">REST API Enabled</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

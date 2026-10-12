@@ -1,0 +1,121 @@
+@model AcxiomCRM.ViewModels.OpportunityDetailsViewModel
+@{
+    ViewData["Title"] = "Opportunity: " + Model.Opportunity.OpportunityName;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-bold text-dark mb-0">@Model.Opportunity.OpportunityName</h2>
+            <span class="badge @(Model.Opportunity.Status == "Won" ? "bg-success-subtle text-success" : (Model.Opportunity.Status == "Lost" ? "bg-danger-subtle text-danger" : "bg-primary-subtle text-primary"))">
+                @Model.Opportunity.Status
+            </span>
+            <span class="badge bg-light text-dark border">@Model.Opportunity.Stage</span>
+        </div>
+        <p class="text-muted small mb-0 mt-1">
+            Customer: <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.Opportunity.CustomerId" class="fw-semibold text-decoration-none">@Model.Opportunity.Customer?.CustomerName</a> &bull; Owner: <strong>@(Model.Opportunity.AssignedTo?.FullName ?? "Unassigned")</strong>
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Opportunity.OpportunityId" class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i> Edit Deal
+        </a>
+        <a asp-controller="FollowUps" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-outline-secondary">
+            <i class="bi bi-calendar-plus me-1"></i> Follow-Up
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Financial Metrics Cards -->
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-3">
+            <span class="text-muted small text-uppercase fw-semibold">Contract / Deal Amount</span>
+            <h3 class="fw-bold text-dark mt-1 mb-0">$@Model.Opportunity.Amount.ToString("N0")</h3>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-3">
+            <span class="text-muted small text-uppercase fw-semibold">Win Probability</span>
+            <h3 class="fw-bold text-primary mt-1 mb-0">@Model.Opportunity.Probability%</h3>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-3">
+            <span class="text-muted small text-uppercase fw-semibold">Weighted Pipeline Value</span>
+            <h3 class="fw-bold text-success mt-1 mb-0">$@Model.Opportunity.WeightedValue.ToString("N0")</h3>
+        </div>
+    </div>
+
+    <!-- Deal Information -->
+    <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-info-circle me-2 text-primary"></i> Opportunity Specifics</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5 text-muted small">Stage</dt>
+                    <dd class="col-sm-7"><span class="badge bg-light text-dark border">@Model.Opportunity.Stage</span></dd>
+
+                    <dt class="col-sm-5 text-muted small">Expected Close</dt>
+                    <dd class="col-sm-7">@Model.Opportunity.ExpectedCloseDate.ToString("MMMM dd, yyyy")</dd>
+
+                    <dt class="col-sm-5 text-muted small">Created Date</dt>
+                    <dd class="col-sm-7">@Model.Opportunity.CreatedDate.ToString("MMM dd, yyyy")</dd>
+
+                    <dt class="col-sm-5 text-muted small">Originating Lead</dt>
+                    <dd class="col-sm-7">@(Model.Opportunity.Lead?.LeadName ?? "Direct Opportunity")</dd>
+
+                    <dt class="col-sm-5 text-muted small">Deal Notes</dt>
+                    <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.Opportunity.Notes) ? "No notes recorded." : Model.Opportunity.Notes)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow-Ups and Activities -->
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i> Deal History & Follow-Ups</h5>
+                <a asp-controller="Activities" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-sm btn-outline-primary rounded-pill">+ Activity</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.FollowUps.Any() || Model.Activities.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var f in Model.FollowUps)
+                        {
+                            <div class="list-group-item p-3 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-dark"><i class="bi bi-calendar-event me-1 text-warning"></i> Follow-Up: @f.Subject</span>
+                                    <span class="badge @(f.Status == "Completed" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">@f.Status</span>
+                                </div>
+                                <p class="text-muted small mb-1 mt-1">@f.Remarks</p>
+                                <span class="small text-muted"><i class="bi bi-clock me-1"></i> Due: @f.FollowUpDate.ToString("yyyy-MM-dd HH:mm") &bull; Type: @f.FollowUpType</span>
+                            </div>
+                        }
+                        @foreach (var a in Model.Activities)
+                        {
+                            <div class="list-group-item p-3 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-dark"><i class="bi bi-check-circle me-1 text-info"></i> @a.ActivityType: @a.Subject</span>
+                                    <span class="badge bg-secondary-subtle text-secondary">Logged</span>
+                                </div>
+                                <p class="text-muted small mb-1 mt-1">@a.Description</p>
+                                <span class="small text-muted"><i class="bi bi-clock me-1"></i> Date: @a.ActivityDate.ToString("yyyy-MM-dd HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted small">
+                        No activity or follow-up recorded for this deal.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

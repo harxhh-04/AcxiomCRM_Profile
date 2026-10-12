@@ -1,0 +1,121 @@
+@model AcxiomCRM.ViewModels.LeadDetailsViewModel
+@{
+    ViewData["Title"] = "Lead: " + Model.Lead.LeadName;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="fw-bold text-dark mb-0">@Model.Lead.LeadName</h2>
+            <span class="badge bg-light text-secondary border font-monospace">@Model.Lead.LeadCode</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">@Model.Lead.Status</span>
+            <span class="badge bg-light text-dark border">Priority: @Model.Lead.Priority</span>
+        </div>
+        <p class="text-muted small mb-0 mt-1">
+            Source: <strong>@Model.Lead.Source</strong> &bull; Assigned to <strong>@(Model.Lead.AssignedTo?.FullName ?? "Unassigned")</strong> &bull; Captured @Model.Lead.CreatedDate.ToString("MMM dd, yyyy")
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.Lead.Status != "Converted")
+        {
+            <a asp-action="Convert" asp-route-id="@Model.Lead.LeadId" class="btn btn-success">
+                <i class="bi bi-arrow-repeat me-1"></i> Convert to Customer
+            </a>
+        }
+        else
+        {
+            @if (Model.Lead.ConvertedCustomerId.HasValue)
+            {
+                <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.Lead.ConvertedCustomerId.Value" class="btn btn-outline-success">
+                    <i class="bi bi-person-check me-1"></i> View Converted Customer
+                </a>
+            }
+        }
+        <a asp-action="Edit" asp-route-id="@Model.Lead.LeadId" class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a asp-controller="FollowUps" asp-action="Create" asp-route-leadId="@Model.Lead.LeadId" class="btn btn-outline-secondary">
+            <i class="bi bi-calendar-plus me-1"></i> Follow-Up
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Lead Info -->
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-person-badge me-2 text-info"></i> Lead Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5 text-muted small">Company</dt>
+                    <dd class="col-sm-7 fw-semibold">@(string.IsNullOrEmpty(Model.Lead.CompanyName) ? "—" : Model.Lead.CompanyName)</dd>
+
+                    <dt class="col-sm-5 text-muted small">Email</dt>
+                    <dd class="col-sm-7"><a href="mailto:@Model.Lead.Email">@Model.Lead.Email</a></dd>
+
+                    <dt class="col-sm-5 text-muted small">Phone</dt>
+                    <dd class="col-sm-7">@Model.Lead.Phone</dd>
+
+                    <dt class="col-sm-5 text-muted small">Expected Value</dt>
+                    <dd class="col-sm-7 fw-bold text-success">$@Model.Lead.ExpectedValue.ToString("N0")</dd>
+
+                    <dt class="col-sm-5 text-muted small">Status</dt>
+                    <dd class="col-sm-7">@Model.Lead.Status</dd>
+
+                    <dt class="col-sm-5 text-muted small">Priority</dt>
+                    <dd class="col-sm-7">@Model.Lead.Priority</dd>
+
+                    <dt class="col-sm-5 text-muted small">Assigned To</dt>
+                    <dd class="col-sm-7">@(Model.Lead.AssignedTo?.FullName ?? "Unassigned")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Follow-ups and Activities -->
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i> Planned & Logged Interactions</h5>
+                <a asp-controller="Activities" asp-action="Create" asp-route-leadId="@Model.Lead.LeadId" class="btn btn-sm btn-outline-primary rounded-pill">+ Log Activity</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.FollowUps.Any() || Model.Activities.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var f in Model.FollowUps)
+                        {
+                            <div class="list-group-item p-3 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-dark"><i class="bi bi-calendar-event me-1 text-warning"></i> Follow-Up: @f.Subject</span>
+                                    <span class="badge @(f.Status == "Completed" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">@f.Status</span>
+                                </div>
+                                <p class="text-muted small mb-1 mt-1">@f.Remarks</p>
+                                <span class="small text-muted"><i class="bi bi-clock me-1"></i> Due: @f.FollowUpDate.ToString("yyyy-MM-dd HH:mm") &bull; Type: @f.FollowUpType</span>
+                            </div>
+                        }
+                        @foreach (var a in Model.Activities)
+                        {
+                            <div class="list-group-item p-3 border-0 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-dark"><i class="bi bi-check-circle me-1 text-info"></i> @a.ActivityType: @a.Subject</span>
+                                    <span class="badge bg-secondary-subtle text-secondary">Logged</span>
+                                </div>
+                                <p class="text-muted small mb-1 mt-1">@a.Description</p>
+                                <span class="small text-muted"><i class="bi bi-clock me-1"></i> Date: @a.ActivityDate.ToString("yyyy-MM-dd HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted small">
+                        No activity or follow-up recorded for this lead yet.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

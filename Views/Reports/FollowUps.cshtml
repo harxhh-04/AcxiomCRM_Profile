@@ -1,0 +1,65 @@
+@model IEnumerable<AcxiomCRM.Models.FollowUp>
+@{
+    ViewData["Title"] = "Follow-Up Performance Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">Follow-Up Performance Report</h2>
+        <p class="text-muted small mb-0">Audit of planned, completed, and overdue follow-up milestones</p>
+    </div>
+    <div>
+        <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i> Print Report
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Type</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Assigned Representative</th>
+                        <th>Associated Entity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var f in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-dark">@f.Subject</div>
+                                <div class="text-muted small">@f.Remarks</div>
+                            </td>
+                            <td><span class="badge bg-secondary-subtle text-secondary">@f.FollowUpType</span></td>
+                            <td class="@(f.IsOverdue ? "text-danger fw-bold" : "text-dark")">
+                                @f.FollowUpDate.ToString("yyyy-MM-dd HH:mm")
+                                @if (f.IsOverdue)
+                                {
+                                    <span class="badge bg-danger ms-1">OVERDUE</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @(f.Status == "Completed" ? "bg-success-subtle text-success" : (f.Status == "Planned" ? "bg-primary-subtle text-primary" : "bg-secondary-subtle text-secondary"))">
+                                    @f.Status
+                                </span>
+                            </td>
+                            <td>@(f.AssignedTo?.FullName ?? "Unassigned")</td>
+                            <td>
+                                @if (f.Customer != null) { <div>Customer: @f.Customer.CustomerName</div> }
+                                @if (f.Lead != null) { <div>Lead: @f.Lead.LeadName</div> }
+                                @if (f.Opportunity != null) { <div>Deal: @f.Opportunity.OpportunityName</div> }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
